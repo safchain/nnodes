@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<nnodes xmlns:soa="http://www.nnodes.org/xmlns/" xmlns:mx="http://www.nnodes.org/xmlns/"
+	xmlns:a="http://www.nnodes.org/xmlns/"
+	xmlns:cname="http://www.nnodes.org/xmlns/"
+	xmlns:ns="http://www.nnodes.org/xmlns/"
+	xmlns:ptr="http://www.nnodes.org/xmlns/"
+	xmlns:txt="http://www.nnodes.org/xmlns/">
+	<options>
+		<user uid="1000" gid="1000"/>
+		<listen port="1153"/>
+		<pid file="/tmp/nnodes.pid"/>
+	</options>
+	<zones ttl="500">
+		<zone name="test." class="IN" ttl="500">
+			<a record="www" weight="0">
+				<a:data ttl="1">1.2.3.4</a:data>
+			</a>
+
+			<a record="cdn" weight="1" ttl="1">
+				<a:data>1.1.1.1</a:data>
+				<a:data>2.2.2.2</a:data>
+				<a:data>3.3.3.3</a:data>
+				<a:data>4.4.4.4</a:data>
+				<a:data>5.5.5.5</a:data>
+				<a:data>6.6.6.6</a:data>
+				<a:data>7.7.7.7</a:data>
+				<a:data>8.8.8.8</a:data>
+				<a:data>9.9.9.9</a:data>
+			</a>
+		</zone>
+	</zones>
+</nnodes>

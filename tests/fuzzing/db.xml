@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nnodes SYSTEM "db.dtd">
+<nnodes xmlns:soa="http://www.nnodes.org/xmlns/"
+      xmlns:mx="http://www.nnodes.org/xmlns/"
+      xmlns:a="http://www.nnodes.org/xmlns/"
+      xmlns:cname="http://www.nnodes.org/xmlns/"
+      xmlns:ns="http://www.nnodes.org/xmlns/"
+      xmlns:ptr="http://www.nnodes.org/xmlns/"
+      xmlns:txt="http://www.nnodes.org/xmlns/">
+	<options>
+		<user uid="1000" gid="1000"/>
+		<listen port="1153"/>
+		<pid file="/tmp/nnodes.pid"/>
+	</options>
+	<acls>
+		<acl id="group1"><![CDATA[mod($timestamp, 2)]]>
+		</acl>
+		<acl id="group2"><![CDATA[! mod($timestamp, 2)]]>
+		</acl>
+		<acl id="avail"><![CDATA[available(${www2.nnodes.org. IN A})]]>
+		</acl>
+	</acls>
+	<monitors>
+		<pipe id="stuff" refresh="3"><![CDATA[perl -e '$i = 0; while (<STDIN>) { warn "> $_"; $| = 1; $_ =~ /^check\s(\d+)/; if ((time % 2) == 0) {print "ko $1\n";} else {print "ok $1\n";} }']]>
+		</pipe>
+	</monitors>
+	
+	<zones ttl="500">
+		<zone name="nnodes.org." class="IN" ttl="500">
+			<soa record="@">
+				<soa:data ttl="1">
+					<master>ns.nnodes.org.</master>
+					<mail>root.nnodes.org.</mail>
+					<serial>123</serial>
+					<refresh>123</refresh>
+					<retry>123</retry>
+					<expire>123</expire>
+				</soa:data>
+			</soa>
+			<ns record="@">
+				<ns:data ttl="1">ns1
+				</ns:data>
+			</ns>
+			<a record="www2" weight="1">
+				<a:data ttl="1" weight="1" monitor="stuff">16.16.16.16
+				</a:data>
+				<a:data ttl="1" weight="1" monitor="stuff">17.17.17.17
+				</a:data>
+				<a:data ttl="1">10.10.10.10
+				</a:data>
+				<a:data ttl="1">11.11.11.11
+				</a:data>
+				<a:data ttl="1">12.12.12.12
+				</a:data>
+				<a:data ttl="1">13.13.13.13
+				</a:data>
+				<a:data ttl="1">14.14.14.14
+				</a:data>
+				<a:data ttl="1" weight="0">15.15.15.15
+				</a:data>
+			</a>
+		</zone>
+		<zone name="0.0.127.in-addr.arpa." class="IN" ttl="500">
+			<ptr record="1" weight="0">
+				<ptr:data>localhost.</ptr:data>
+			</ptr>
+		</zone>
+	</zones>
+</nnodes>

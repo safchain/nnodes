@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nnodes SYSTEM "db.dtd">
+<nnodes xmlns="http://www.nnodes.org/xmlns/">
+	<!--
+	global options
+	-->
+	<options>
+		<!--
+		set user id and group id
+		-->
+		<user uid="1000" gid="1000"/>
+
+		<!--
+		add a listening interface, you can set more than one interface
+		-->
+		<listen addr="0.0.0.0" port="1153"/>
+
+		<!--
+		set the path and the level of the log file
+		level 1: error	
+		level 2: info	
+		level 3: warn
+		level 4: debug
+		-->
+		<log level="4" file="/tmp/queries.log"/>
+
+		<pid file="/tmp/nnodes.pid"/>
+
+		<!-- 
+		libgeoip database path 
+		-->
+		<geoip database="/usr/share/GeoIP/GeoIP.dat"/>
+
+		<!--
+		number of threads for each listening interface
+		-->
+		<threads value="8"/>
+
+		<!--
+		web server for the monitoring report, and 
+		the availability of records
+
+		attributes:
+
+			port: port number
+			xslt: xml style sheet path for the xml report
+		-->
+		<websrv port=9090"" xslt="/home/vmplanet/Nnodes/docs/status.xslt"/>
+	</options>
+
+	<!-- 
+	acls, boolean expression used to disable a record.
+
+	syntax:
+	
+		mod($timestamp, 2) and regio("FR")
+
+	variables availables:
+
+		$timestamp: unix timestamp
+		${rr class type}: a record path, ex: ${local.localdomain IN A}
+	
+	functions availables:
+
+		equal: comparison of numbers, syntax: equal(0, 1)
+		mod: modulo, syntax: mod(4, 2)
+		region: geo ip lookup, return true if region match the remote ip
+	
+	-->
+	<acls>
+		<acl id="group1"><![CDATA[mod($timestamp, 2)]]></acl>
+		<acl id="avail"><![CDATA[available(${state.local. IN TXT}) and region("FR")]]></acl>
+	</acls>
+
+	<!--
+	monitors
+
+	attributes:
+	
+		refresh: set how many time a checking will be executed
+		try: set the record to unavailable after n tries
+		protection: if true, if all records are unavailable, then all records will be returned
+
+	pipe monitor:
+		
+		for each record which needs to be checked, a line is send to stdin with the following format:
+
+			check <check id> <record name> <class> <type> <data>
+		
+		the script must return the check id followed by the status of the record (ok/ko) to stdout
+
+		example with a perl script which always return ko:
+
+			while (<STDIN>) {
+				$_ =~ /^check\s(\d+)/;
+				syswrite(STDOUT, "ko $1\n");
+			}
+	-->
+	<monitors>
+		<pipe id="mon1" refresh="3">
+			<![CDATA[
+				perl -e 'while (<STDIN>) { 
+					$_ =~ /^check\s(\d+)/; 
+					syswrite (STDOUT, "ko $1\n"); 
+				}'
+			]]>
+		</pipe>
+	</monitors>
+
+	<!-- 
+	zones declarations
+	-->
+	<zones ttl="500">
+
+		<!-- 
+		external zone file declaration
+		
+		attributes:
+
+			name: if you want to use a template zone file, 
+			      you must set the name of the zone here and let it undefined inside the zone file
+		-->
+		<zone src="docs/local.xml"/>
+
+		<!-- 
+		embeded zone declaration
+		-->
+		<zone name="here." class="IN" ttl="3600">
+			<soa record="@">
+				<soa:data ttl="3600">
+					<master>ns.here.</master>
+					<mail>root.here.</mail>
+					<serial>2001122400</serial>
+					<refresh>28800</refresh>
+					<retry>14400</retry>
+					<expire>3600000</exp	ire>
+				</soa:data>
+			</soa>
+			<ns record="@">
+				<ns:data ttl="3600">ns1
+				</ns:data>
+			</ns>
+			<a record="ns1">
+				<a:data>22.22.22.22</a:data>			
+			</a>
+		</zone>
+	</zones>
+</nnodes>

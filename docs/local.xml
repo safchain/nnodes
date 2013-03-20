@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nnodes SYSTEM "db.dtd">
+<nnodes xmlns="http://www.nnodes.org/xmlns/" 
+	  xmlns:soa="http://www.nnodes.org/xmlns/soa"
+      xmlns:mx="http://www.nnodes.org/xmlns/mx"
+      xmlns:a="http://www.nnodes.org/xmlns/a"
+      xmlns:cname="http://www.nnodes.org/xmlns/cname"
+      xmlns:ns="http://www.nnodes.org/xmlns/ns"
+      xmlns:ptr="http://www.nnodes.org/xmlns/ptr"
+      xmlns:txt="http://www.nnodes.org/xmlns/txt">
+	<zones>		
+		<zone name="local." class="IN" ttl="3600">
+			<soa record="@">
+				<soa:data ttl="3600">
+					<master>ns.local.</master>
+					<mail>root.local.</mail>
+					<serial>2001122400</serial>
+					<refresh>28800</refresh>
+					<retry>14400</retry>
+					<expire>3600000</exp	ire>
+				</soa:data>
+			</soa>
+			<ns record="@">
+				<ns:data ttl="3600">ns1
+				</ns:data>
+			</ns>
+			<a record="ns1">
+				<a:data>12.12.12.12</a:data>			
+			</a>
+			<mx record="@">
+				<mx:data weight="1" ttl="1800">
+					<preference>10</preference>
+					<exchange>www</exchange>
+				</mx:data>
+			</mx>
+			<a record="www" weight="0">
+				<a:data ttl="1">1.1.1.1
+				</a:data>
+				<a:data ttl="1">2.2.2.2
+				</a:data>
+				<a:data ttl="1">3.3.3.3
+				</a:data>
+			</a>
+			<a record="ftp" weight="1">
+				<a:data ttl="1" weight="0" monitor="mon1">16.16.16.16
+				</a:data>
+				<a:data ttl="1" weight="0" monitor="mon1">17.17.17.17
+				</a:data>
+				<a:data ttl="1">18.18.18.18
+				</a:data>
+				<a:data ttl="1">19.19.19.19
+				</a:data>
+				<a:data ttl="1">20.20.20.20
+				</a:data>
+			</a>
+			<cname record="web" weight="1">
+				<cname:data ttl="300" weight="1">www
+				</cname:data>
+			</cname>
+			<txt record="state" weight="0">
+				<txt:data><![CDATA[Hello world]]>
+				</txt:data>
+			</txt>
+		</zone>
+	</zones>
+</nnodes>
+
